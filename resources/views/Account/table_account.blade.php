@@ -36,6 +36,16 @@
     .edit-btn i {
         margin-right: 5px;
     }
+
+    .inputformtext {
+        width : 260;
+        height: 70;
+    }
+    .inputformadmin {
+        width : 260;
+        padding: 5px;
+        margin-top : 5px;
+    }
 </style>
 
 @section ('container')
@@ -90,8 +100,8 @@
                         <td>{{ $user->profile->alamat }}</td>
 
                         <td>
-                            <button class="edit-btn" onclick="showPopup()"><ion-icon name="build-sharp"
-                                    style="font-size: 25px;"></ion-icon></button>
+                        <a href="/account/{{$user->id }}/edit"><button class="edit-btn"><ion-icon
+                                            name="construct-outline" style="font-size: 20px;"></ion-icon></button></a>
                         </td>
                         <td>
                             <form onsubmit="return confirm('Yakin Mau Hapus Data')" action="/account/{{$user->id}}"
@@ -110,11 +120,10 @@
     </div>
     </div>
 
-    <div id="popupOverlay" class="overlayPopup">
+<div id="popupOverlay" class="overlayPopup">
         <div class="popup">
             <div class="close-btn">
-                <span><label for="name">0 : User</label></span>
-                <span><label for="name">1 : Admin</label></span>
+                <span><label for="name">Edit Akun</label></span>
                 <span><button onclick="hidePopup()">&times;</button></span>
 
             </div>
@@ -122,8 +131,66 @@
                 @csrf
                 @method('put')
                 <div class="input-container">
-                    <input type="text" class="input" name='is_admin' id="is_admin">
-                    <div class="input-container"><button type="submit" class="submit btn" id='btn'>Registration</button>
+                <div class="row">
+                                    <div class='header'>Email</div>
+                                    <div class='text'>
+                                        <input class="inputform" type="text" name="email" id="email"
+                                            value="{{ $user->email }}">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class='header'>Password</div>
+                                    <div class='text'>
+                                        <input class="inputform" type="password" name="password" id="password"
+                                            value="">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+    <div class='header'>Role</div>
+    <div class='text'>
+        <select class="inputformadmin" name="is_admin" id="is_admin"> 
+            <option value="0" {{ $user->is_admin == 0 ? 'selected' : '' }}>Karyawan</option>
+            <option value="1" {{ $user->is_admin == 1 ? 'selected' : '' }}>Admin</option>
+        </select>
+    </div>
+</div>
+
+                                <hr>
+                                <div class="row">
+                                    <div class='header'>Jenis Kelamin</div>
+                                    <div class='text'>
+                                        <input class="inputform" type="text" name="kelamin" id="kelamin"
+                                            value="{{ $user->profile->kelamin }}">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class='header'>Agama</div>
+                                    <div class='text'>
+                                        <input class="inputform" type="text" name="agama"
+                                            value="{{ $user->profile->agama }}">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class='header'>Posisi</div>
+                                    <div class='text'>
+                                        <input class="inputform" type="text" name="jabatan"
+                                            value="{{ $user->profile->jabatan }}">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class='header'>Alamat</div>
+                                    <div class='text'>
+                                        <textarea class="inputformtext"
+                                            name="alamat" id="alamat">{{ $user->profile->alamat }}</textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" onclick="submitForm('popupOverlay', {{ $user->id }})" class="submit btn" id='btn'>Update</button>
+
                     </div>
             </form>
         </div>
@@ -138,13 +205,43 @@
         document.getElementById("popupOverlay").style.display = "none";
     }
 
-    function submitForm() {
-        var admin = document.getElementById("is_admin").value;
+//     function submitForm(overlayId, userId) {
+//     var email = document.getElementById("email").value;
+//     var password = document.getElementById("password").value;
+//     var is_admin = document.getElementById("is_admin").value;
+//     var alamat = document.getElementById("alamat").value;
+//     var kelamin = document.getElementById("kelamin").value;
 
-        // Lakukan sesuatu dengan data yang diinput
-        console.log("is_admin:", admin);
+//     // Data yang akan dikirim ke server
+//     var formData = {
+//         email: email,
+//         password: password,
+//         is_admin: is_admin,
+//         alamat: alamat,
+//         kelamin: kelamin
+//     };
 
-        hidePopup(); // Menutup pop-up setelah mengirim data
-    }
+//     // Kirim data menggunakan AJAX
+//     $.ajax({
+//         type: 'PUT',
+//         url: '/account/{{$user->id',
+//         data: formData,
+//         success: function (data) {
+//             // Handle respons dari server, misalnya menampilkan pesan sukses
+//             alert("Data berhasil diperbarui: " + data.message);
+//             // Sembunyikan overlay
+//             hidePopup(overlayId);
+//         },
+//         error: function (data) {
+//             // Handle error, misalnya menampilkan pesan kesalahan
+//             alert("Terjadi kesalahan saat mengirim data: " + data.error);
+//         }
+//     });
+
+//     // Mencegah form dari mengirim permintaan POST biasa
+//     return false;
+// }
+
 </script>
 @endsection
+ 

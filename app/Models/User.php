@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Assets;
 use App\Models\Profile;
 use App\Events\UserCreated;
 use Laravel\Sanctum\HasApiTokens;
@@ -44,11 +45,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function profile(){
-        return $this->hasOne(Profile::class,'user_id');
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id');
     }
 
-    public function asset(){
+    public function asset()
+    {
         return $this->hasMany(Assets::class);
     }
 
@@ -58,11 +61,11 @@ class User extends Authenticatable
 
     public function getRoleAttribute()
     {
-    if ($this->is_admin == 1) {
-        return 'admin';
-    }
+        if ($this->is_admin == 1) {
+            return 'admin';
+        }
 
-    return 'user';
+        return 'user';
     }
 
 }

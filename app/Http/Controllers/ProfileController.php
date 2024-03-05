@@ -53,6 +53,10 @@ class ProfileController extends Controller
             $user = Auth::user();
             $user->name = $request->input('name');
             $user->email = $request->input('email');
+            if ($request->filled('password')) {
+                // Input baru untuk password diberikan
+                $user->password = bcrypt($request->input('password'));
+            }
             $user->save();
 
             // Mengupdate data pada tabel Profile yang berelasi dengan User
@@ -69,7 +73,7 @@ class ProfileController extends Controller
                 }
                 $profile['image'] = $request->file('image')->store('users-images');
             }
-            
+
             $profile->save();
             DB::commit();
 

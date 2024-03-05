@@ -79,7 +79,7 @@
                     @php $count = 0 @endphp
                     @foreach ($assets->sortByDesc('created_at') as $asset)
                     @if ($count <8) <tr>
-                        <td><a href="/{{ $asset['serial_number']}}" class="text-decoration-none">{{ $asset->nama_aset
+                        <td><a href="assets/{{ $asset['serial_number']}}" class="text-decoration-none">{{ $asset->nama_aset
                                 }}</a></td>
                         <td>{{ $asset->serial_number}}</td>
                         <td>{{ $asset->location }}</td>

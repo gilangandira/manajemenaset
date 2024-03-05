@@ -28,16 +28,26 @@
                         <div class="cardText">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class='header'>Full Name</div>
+                                    <div class='header'>Nama</div>
                                     <div class='text'>
-                                        <input class="inputform" type="text" name="name" value="{{ $user->name }}">
+                                        <input class="inputform" type="text" name="name"
+                                            value="{{ $user->name }}">
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="row">
                                     <div class='header'>Email</div>
                                     <div class='text'>
-                                        <input class="inputform" type="email" name="email" value="{{ $user->email }}">
+                                        <input class="inputform" type="text" name="email"
+                                            value="{{ $user->email }}">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class='header'>Password</div>
+                                    <div class='text'>
+                                        <input class="inputform" type="password" name="password"
+                                            value="">
                                     </div>
                                 </div>
                                 <hr>

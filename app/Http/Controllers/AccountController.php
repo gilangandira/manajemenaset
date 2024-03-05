@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Assets;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 
 class AccountController extends Controller
@@ -51,24 +53,59 @@ class AccountController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-
+    public function edit($id)
+    {
+        $data = User::where('id', $id)->first();
+        return response(view('Account.edit_account', [
+            'title' => 'Edit Account',
+            'user' => $data,
+        ]));
+    }
 
 
     public function update(Request $request, $id)
     {
-        $request->validate(
-            [
-                'is_admin' => 'required|',
-            ]
-        );
 
-        $data = [
-            'is_admin' => $request->input('is_admin'),
-        ];
+        DB::beginTransaction();
 
-        User::where('id', $id)->update($data);
-        return redirect('/account')->with('success', 'Role Sudah Di Ganti');
+        try {
+            // Mengupdate data pada tabel User
+            $user = User::find($id);
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+            if ($request->filled('password')) {
+                // Input baru untuk password diberikan
+                $user->password = bcrypt($request->input('password'));
+            }
+            $user->is_admin = $request->input('is_admin');
+            $user->save();
+
+            // Mengupdate data pada tabel Profile yang berelasi dengan User
+            $profile = $user->profile;
+            $profile->kelamin = $request->input('image');
+            $profile->kelamin = $request->input('kelamin');
+            $profile->agama = $request->input('agama');
+            $profile->jabatan = $request->input('jabatan');
+            $profile->alamat = $request->input('alamat');
+
+            if ($request->file('image')) {
+                if ($request->oldImage) {
+                    Storage::delete($request->oldImage);
+                }
+                $profile['image'] = $request->file('image')->store('users-images');
+            }
+
+            $profile->save();
+            DB::commit();
+
+            return redirect('/account')->with('success', 'Data berhasil diperbarui.');
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect('/account')->with('error', 'Terjadi kesalahan saat mengupdate data.');
+        }
     }
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -78,7 +115,37 @@ class AccountController extends Controller
      */
     public function destroy($id)
     {
-        User::where('id', $id)->delete();
-        return redirect('/account')->with('success', 'Data Berhasil Dihapus');
+        // ID pengguna yang dilindungi
+        $protectedUserIds = [8]; // Gantilah dengan ID-ID yang sesuai
+
+        $user = User::find($id);
+
+        if ($user) {
+            // Periksa apakah ID pengguna berada dalam daftar yang dilindungi
+            if (in_array($user->id, $protectedUserIds)) {
+                return redirect('/account')->with('error', 'Akun ini tidak dapat dihapus.');
+            } else {
+                // Dapatkan semua aset yang terkait dengan pengguna
+                $assets = Assets::where('user_id', $user->id)->get();
+
+                // Ubah nilai user_id pada semua aset yang terkait menjadi null
+                foreach ($assets as $asset) {
+                    $asset->user_id = 8; // Atau ganti dengan nilai default yang sesuai jika ada
+                    $asset->save();
+                }
+
+                // Hapus pengguna
+                $user->delete();
+
+                return redirect('/account')->with('success', 'Data berhasil dihapus.');
+            }
+        } else {
+            return redirect('/account')->with('error', 'Pengguna tidak ditemukan.');
+        }
     }
+
+
+
+
+
 }
